@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>GML Map Tool</title>
+      <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+      <link href="css/gmlmap.css" rel="stylesheet" type="text/css">
+      <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>
+      <script type="text/javascript" src='js/handlebars-v1.3.0.js'></script>   
+      <script src="js/jquery-1.11.1.min.js"></script>
+      <script src="js/jquery.format.js"></script>
+      <script type="text/javascript" src='js/gmlmap.js'></script>
+
+   </head>
+   <body>
+      <!-- Begin page content -->
+      <div class="container">
+         <div class="page-header">
+            <h1>GML Map Tool</h1>
+         </div>
+            <div id="custom_menu">
+               <div  class="btn-group">
+                  <button id="btnHideMarkers" type="button" class="btn btn-default">Hide Markers</button>
+               </div>
+               <div  class="btn-group">
+                  <button id="btnShowMarkers" type="button" class="btn btn-default">Show Markers</button>
+               </div>
+               <div  class="btn-group">
+                  <button id="btnDeleteMarkers" type="button" class="btn btn-default">Delete Markers</button>
+               </div>
+               <div  class="btn-group">
+                  <button id="btnCalculateDistances" type="button" class="btn btn-default">Calculate Distances</button>
+               </div>
+            </div>
+
+         <input id="inputsearch" class="controls" type="text" placeholder="Enter a location">
+         <div class="row">
+            <div id="map-canvas" style="width: 100%; height: 300px;"></div>
+         </div>
+         <div class="row">
+            <div class="col-md-6 bs-callout bs-callout-info">
+               <h4>Nodes:</h4>
+               <textarea id="resultsNode" rows="10"></textarea>
+            </div>
+            <div class="col-md-6 bs-callout bs-callout-info">
+               <h4>Distances:</h4>
+               <textarea id="resultsDistances" rows="10"></textarea>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-md-9">
+               <h4>GML Graph:</h4>
+               <textarea id="resultsGML" rows="10"></textarea>
+            </div>
+            <div class="col-md-1" style="margin-top: 40px;">
+                  <button id="btnDownloadGML" type="button" class="btn btn-success btn-lg">
+                     <img src="images/glyphicons_200_download.png" alt="download" class="glyphicons download"> download GML !
+                  </button> 
+            </div>
+         </div>
+      </div>
+   </body>
+</html>
