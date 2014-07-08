@@ -23,7 +23,7 @@ GML Map Tool use:
 
  https://developers.google.com/maps/licensing
  
-### future works
+### Future Works
 
  1. Integrate d3js to show a directed graph.
 
