@@ -16,7 +16,17 @@ GML Map Tool use:
  1. jQuery [download](http://jquery.com/) 
  2. jquery.format [download](https://github.com/zachofalltrades/jquery.format)
  3. handlebars [download](http://handlebarsjs.com/) 
+ 4. Google Maps API
+ 5. Google Distance Matrix API
+
+### Limits
+
+ https://developers.google.com/maps/licensing
  
+### future works
+
+ 1. Integrate d3js to show a directed graph.
+
 
 ## Reporting an Issue
 
