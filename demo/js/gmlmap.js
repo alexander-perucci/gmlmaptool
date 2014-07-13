@@ -185,7 +185,9 @@ function writeResultsDistances(response){
         for (var i = 0; i < origins.length; i++) {
             var results = response.rows[i].elements;
             for (var j = 0; j < results.length; j++) {
-                resultsDistance += '--- FROM  node_ [' + (i + 1) + '] TO node_ [' + (j + 1) + '] : ' + results[j].distance.value + '\n';
+                if (results[j].status == google.maps.GeocoderStatus.OK){
+                    resultsDistance += '--- FROM  node_ [' + (i + 1) + '] TO node_ [' + (j + 1) + '] : ' + results[j].distance.value + '\n';
+                }
             }
         }
         $('#resultsDistances').val(resultsDistance);
@@ -215,12 +217,14 @@ function getJSONEdge(data) {
     for (var i = 0; i < origins.length; i++) {
         var results = data.rows[i].elements;
         for (var j = 0; j < results.length; j++) {
-            if (results[j].distance.value != 0) {
-                jsonArr.push({
-                    source: i + 1,
-                    target: j + 1,
-                    distance: results[j].distance.value
-                });
+            if (results[j].status == google.maps.GeocoderStatus.OK){
+                if (results[j].distance.value != 0) {
+                    jsonArr.push({
+                        source: i + 1,
+                        target: j + 1,
+                        distance: results[j].distance.value
+                    });
+                }
             }
         }
     }
