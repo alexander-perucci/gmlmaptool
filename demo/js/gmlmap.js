@@ -73,6 +73,17 @@ function initialize() {
 
     });
 
+
+
+    /*per generare la linea nella mappa*/
+    var polyOptions = {
+    strokeColor: '#000000',
+    strokeOpacity: 1.0,
+    strokeWeight: 3
+  };
+  poly = new google.maps.Polyline(polyOptions);
+  poly.setMap(map);
+
 }
 
 var guid = (function () {
@@ -308,6 +319,65 @@ function downloadGML(strData, strFileName, strMimeType) {
     }, 333);
     return true;
 } /* end download() */
+
+
+/*
+    WRITE SOLUTION IN MAP
+*/
+
+
+function setSolutionInMap(solution){
+
+    var solution="{\"path\":true,\"arcs\":[{\"source\":1,\"target\":2},{\"source\":1,\"target\":3},{\"source\":2,\"target\":4},{\"source\":4,\"target\":1}]}";
+    var jsonSolution = jQuery.parseJSON(solution);
+    var allMarkers=get_origin();
+   
+    if(jsonSolution.path){
+        /*se e' TRUE viene messo nella mappa il percorso stradale*/
+        
+        for (var key in jsonSolution.arcs) {
+            var rendererOptions = {
+                preserveViewport: true,         
+                suppressMarkers:false
+            };
+        var directionsService = new google.maps.DirectionsService();
+            var request = {
+                origin: allMarkers[jsonSolution.arcs[key].source-1], 
+                destination: allMarkers[jsonSolution.arcs[key].target-1],
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+
+            var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+            directionsDisplay.setMap(map);
+
+            directionsService.route(request, function(result, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    directionsDisplay.setDirections(result);
+                }
+            });
+        }
+
+    }else{
+        /*se e' FALSE viene disegnato nella mappa un arco*/
+        for (var key in jsonSolution.arcs) {
+             //var lineSymbol = { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW };
+             var lineSymbol = { path: google.maps.SymbolPath.FORWARD };
+             var lineCoordinates = [
+                    allMarkers[jsonSolution.arcs[key].source-1],
+                    allMarkers[jsonSolution.arcs[key].target-1]
+             ];
+             var line = new google.maps.Polyline({
+                     path: lineCoordinates,
+                     icons: [{
+                                icon: lineSymbol,
+                                offset: '100%'
+                            }],
+                    map: map
+                 });
+
+        }
+    }
+}
 
 $( document ).ready(function() {
     $("#btnUploadNodes").change(function(event) {
