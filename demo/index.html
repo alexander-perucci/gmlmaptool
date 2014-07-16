@@ -42,7 +42,15 @@
                <textarea id="resultsNode" rows="10"></textarea>
             </div>
             <div class="col-md-6 bs-callout bs-callout-info">
-               <h4>Distances:</h4>
+               <h4 class="distances title">Distances:</h4>
+               <form class="form-inline distanceType" role="form">
+                  <label>
+                     <input type="radio" name="distanceType" value="distance" checked="checked" /> Meters
+                   </label>
+                   <label>
+                      <input type="radio" name="distanceType" value="duration" /> Seconds
+                    </label>
+               </form>
                <textarea id="resultsDistances" rows="10"></textarea>
             </div>
          </div>

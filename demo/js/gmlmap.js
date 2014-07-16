@@ -182,15 +182,16 @@ function writeResultsNodes(response){
 function writeResultsDistances(response){
     var origins = response.originAddresses;
     var resultsDistance = '';
-        for (var i = 0; i < origins.length; i++) {
-            var results = response.rows[i].elements;
-            for (var j = 0; j < results.length; j++) {
-                if (results[j].status == google.maps.GeocoderStatus.OK){
-                    resultsDistance += '--- FROM  node_ [' + (i + 1) + '] TO node_ [' + (j + 1) + '] : ' + results[j].distance.value + '\n';
-                }
+    var distanceType = $('.distanceType input:checked').val();
+    for (var i = 0; i < origins.length; i++) {
+        var results = response.rows[i].elements;
+        for (var j = 0; j < results.length; j++) {
+            if (results[j].status == google.maps.GeocoderStatus.OK){
+                resultsDistance += '--- FROM  node_ [' + (i + 1) + '] TO node_ [' + (j + 1) + '] : ' + results[j][distanceType].value + '\n';
             }
         }
-        $('#resultsDistances').val(resultsDistance);
+    }
+    $('#resultsDistances').val(resultsDistance);
 }
 
 function writeResultsGML(response){

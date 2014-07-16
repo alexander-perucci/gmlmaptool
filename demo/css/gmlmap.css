@@ -69,4 +69,16 @@ border-color:#4d90fe;
 font-family:Roboto;
 }
 
+.distances.title {
+    float: left;
+}
 
+.distanceType {
+    float: right;
+    margin-top: 8px;
+    margin-right: 40px;
+}
+
+.distanceType label {
+    margin-left: 15px;
+}
