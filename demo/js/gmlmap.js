@@ -117,6 +117,18 @@ function setAllMap(map) {
     }
 }
 
+function handleFileUpload(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+
+    var reader = new FileReader();
+    reader.onload = function(loadedFileEvent) {
+        var fileContent = loadedFileEvent.target.result;
+        alert(fileContent);
+    }
+    reader.readAsBinaryString(file);
+}
+
 // Removes the markers from the map, but keeps them in the array.
 function hideMarkers() {
     setAllMap(null);
@@ -298,11 +310,17 @@ function downloadGML(strData, strFileName, strMimeType) {
 } /* end download() */
 
 $( document ).ready(function() {
-   $("#btnHideMarkers").click(function(){ hideMarkers() });
-   $("#btnShowMarkers").click(function(){showMarkers()});
-   $("#btnDeleteMarkers").click(function(){deleteMarkers()});
-   $("#btnCalculateDistances").click(function(){calculateDistances()});
-   $("#btnDownloadGML").click(function(){downloadGML($("#resultsGML").val(),'graph.gml','text/xml')});
+    $("#btnUploadNodes").change(function(event) {
+        handleFileUpload(event);
+        // reset the input value so to enable the retriggering of the change event if the
+        // user reselects the same file
+        event.target.value = null;
+    });
+    $("#btnHideMarkers").click(hideMarkers);
+    $("#btnShowMarkers").click(showMarkers);
+    $("#btnDeleteMarkers").click(deleteMarkers);
+    $("#btnCalculateDistances").click(calculateDistances);
+    $("#btnDownloadGML").click(function(){downloadGML($("#resultsGML").val(),'graph.gml','text/xml')});
 });
 
 
