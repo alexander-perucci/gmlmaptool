@@ -128,18 +128,6 @@ function setAllMap(map) {
     }
 }
 
-function handleFileUpload(event) {
-    var file = event.target.files[0];
-    if (!file) return;
-
-    var reader = new FileReader();
-    reader.onload = function(loadedFileEvent) {
-        var fileContent = loadedFileEvent.target.result;
-        alert(fileContent);
-    }
-    reader.readAsBinaryString(file);
-}
-
 // Removes the markers from the map, but keeps them in the array.
 function hideMarkers() {
     setAllMap(null);
@@ -320,27 +308,35 @@ function downloadGML(strData, strFileName, strMimeType) {
     return true;
 } /* end download() */
 
+function handleSolutionUpload(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+
+    var reader = new FileReader();
+    reader.onload = function(loadedFileEvent) {
+        var solutionContent = loadedFileEvent.target.result;
+        setSolutionInMap(solutionContent);
+    }
+    reader.readAsBinaryString(file);
+}
 
 /*
     WRITE SOLUTION IN MAP
+    Note: solution is a json string.
 */
-
-
 function setSolutionInMap(solution){
-
-    var solution="{\"path\":true,\"arcs\":[{\"source\":1,\"target\":2},{\"source\":1,\"target\":3},{\"source\":2,\"target\":4},{\"source\":4,\"target\":1}]}";
     var jsonSolution = jQuery.parseJSON(solution);
     var allMarkers=get_origin();
    
-    if(jsonSolution.path){
-        /*se e' TRUE viene messo nella mappa il percorso stradale*/
+    if (jsonSolution.path){
+        /* se e' TRUE viene messo nella mappa il percorso stradale */
         
         for (var key in jsonSolution.arcs) {
             var rendererOptions = {
                 preserveViewport: true,         
                 suppressMarkers:false
             };
-        var directionsService = new google.maps.DirectionsService();
+            var directionsService = new google.maps.DirectionsService();
             var request = {
                 origin: allMarkers[jsonSolution.arcs[key].source-1], 
                 destination: allMarkers[jsonSolution.arcs[key].target-1],
@@ -357,8 +353,8 @@ function setSolutionInMap(solution){
             });
         }
 
-    }else{
-        /*se e' FALSE viene disegnato nella mappa un arco*/
+    } else {
+        /* se e' FALSE viene disegnato nella mappa un arco */
         for (var key in jsonSolution.arcs) {
              //var lineSymbol = { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW };
              var lineSymbol = { path: google.maps.SymbolPath.FORWARD };
@@ -367,30 +363,29 @@ function setSolutionInMap(solution){
                     allMarkers[jsonSolution.arcs[key].target-1]
              ];
              var line = new google.maps.Polyline({
-                     path: lineCoordinates,
-                     icons: [{
-                                icon: lineSymbol,
-                                offset: '100%'
-                            }],
-                    map: map
-                 });
-
+                path: lineCoordinates,
+                icons: [{
+                    icon: lineSymbol,
+                    offset: '100%'
+                }],
+                map: map
+             });
         }
     }
 }
 
 $( document ).ready(function() {
-    $("#btnUploadNodes").change(function(event) {
-        handleFileUpload(event);
-        // reset the input value so to enable the retriggering of the change event if the
-        // user reselects the same file
-        event.target.value = null;
-    });
     $("#btnHideMarkers").click(hideMarkers);
     $("#btnShowMarkers").click(showMarkers);
     $("#btnDeleteMarkers").click(deleteMarkers);
     $("#btnCalculateDistances").click(calculateDistances);
     $("#btnDownloadGML").click(function(){downloadGML($("#resultsGML").val(),'graph.gml','text/xml')});
+    $("#btnUploadSolution").change(function(event) {
+        handleSolutionUpload(event);
+        // reset the input value so to enable the retriggering of the change event if the
+        // user reselects the same file
+        event.target.value = null;
+    });
 });
 
 
