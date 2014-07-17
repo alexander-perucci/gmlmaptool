@@ -17,6 +17,10 @@
          <div class="page-header">
             <h1>GML Map Tool</h1>
          </div>
+         <div id="alert-danger" class="alert alert-danger alert-dismissible" role="alert">
+              <button id="close-alert-danger" type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <strong>Oops!</strong> Cannot upload because the Graph in empty.
+         </div>
             <div id="custom_menu">
                <div  class="btn-group">
                   <button id="btnHideMarkers" type="button" class="btn btn-default">Hide Markers</button>
@@ -31,14 +35,44 @@
                   <button id="btnCalculateDistances" type="button" class="btn btn-default">Calculate Distances</button>
                </div>
                <div class="btn-group uploader">
-                  <button type="button" class="btn btn-info" type="file">Upload solution</button>
+                  <button type="button" class="btn btn-info" type="file">Upload Solution</button>
                   <input id="btnUploadSolution" type="file" />
                </div>
             </div>
+            
 
          <input id="inputsearch" class="controls" type="text" placeholder="Enter a location">
          <div class="row">
             <div id="map-canvas" style="width: 100%; height: 300px;"></div>
+            <div class="panel panel-info">
+                  <div class="panel-heading">
+                     <h3 class="panel-title">Options</h3>
+                  </div>
+                  <div class="panel-body">
+                     <div class="form-group col-md-5">
+                         <label class="col-sm-4 control-label">Generate Graph:</label>
+                         <div class="col-sm-8">
+                           <label class="radio-inline">
+                             <input type="radio" name="generateGraph" id="1" value="symmetric" checked="checked"> symmetric
+                           </label>
+                           <label class="radio-inline">
+                             <input type="radio" name="generateGraph" id="2" value="asymmetric"> asymmetric
+                           </label>
+                         </div>
+                       </div>
+                     <div class="form-group col-md-5">
+                         <label class="col-sm-3 control-label">Distances:</label>
+                         <div class="col-sm-6">
+                              <label class="radio-inline">
+                                 <input type="radio" name="distanceType" value="distance" checked="checked" /> Meters
+                               </label>
+                               <label class="radio-inline">
+                                  <input type="radio" name="distanceType" value="duration" /> Seconds
+                              </label>
+                         </div>
+                       </div>
+                  </div>
+               </div>
          </div>
          <div class="row">
             <div class="col-md-6 bs-callout bs-callout-info">
@@ -47,14 +81,6 @@
             </div>
             <div class="col-md-6 bs-callout bs-callout-info">
                <h4 class="distances title">Distances:</h4>
-               <form class="form-inline distanceType" role="form">
-                  <label>
-                     <input type="radio" name="distanceType" value="distance" checked="checked" /> Meters
-                   </label>
-                   <label>
-                      <input type="radio" name="distanceType" value="duration" /> Seconds
-                    </label>
-               </form>
                <textarea id="resultsDistances" rows="10"></textarea>
             </div>
          </div>
@@ -69,7 +95,7 @@
                   </button> 
             </div>
          </div>
-         <div id="routes" class="row" style="display: none;">
+         <div id="routes" class="row">
             <div class="col-md-12">
                <div class="panel panel-info">
                   <div class="panel-heading">

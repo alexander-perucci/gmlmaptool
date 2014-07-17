@@ -43,7 +43,7 @@ function initialize() {
     google.maps.event.addListener(map, 'click', function (event) {
         addMarker(event.latLng);
     });
-
+    
     // add control menu
     var menu = /** @type {HTMLInputElement} */ (document.getElementById('custom_menu'));
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(menu);
@@ -167,16 +167,16 @@ function calculateDistances() {
         unitSystem: google.maps.UnitSystem.METRIC,
         avoidHighways: false,
         avoidTolls: false
-    }, callback);
+    }, callbackCalculateDistances);
 }
 
-function callback(response, status) {
+function callbackCalculateDistances(response, status) {
     if (status != google.maps.DistanceMatrixStatus.OK) {
         alert('Error was: ' + status);
     } else {
        writeResultsNodes(response);
-        writeResultsDistances(response);
-         writeResultsGML(response);
+       writeResultsDistances(response);
+       writeResultsGML(response);
     }
 }
 
@@ -185,7 +185,7 @@ function writeResultsNodes(response){
      var jsonArr = [];
         for (var i = 0; i < origins.length; i++) {
             jsonArr.push({
-                id: i + 1,
+                id: i,
                 name: origins[i]
             });
         }
@@ -195,12 +195,16 @@ function writeResultsNodes(response){
 function writeResultsDistances(response){
     var origins = response.originAddresses;
     var resultsDistance = '';
-    var distanceType = $('.distanceType input:checked').val();
+    var distanceType = $('input[name=distanceType]:checked').val();
+    var symmetric = ($('input[name=generateGraph]:checked').val()=="symmetric") ? true : false;
     for (var i = 0; i < origins.length; i++) {
         var results = response.rows[i].elements;
         for (var j = 0; j < results.length; j++) {
-            if (results[j].status == google.maps.GeocoderStatus.OK){
-                resultsDistance += '--- FROM  node_ [' + (i + 1) + '] TO node_ [' + (j + 1) + '] : ' + results[j][distanceType].value + '\n';
+            if (symmetric && i > j ){
+                continue;
+            }
+            if (results[j].status == google.maps.GeocoderStatus.OK && i!=j){
+                resultsDistance += '--- FROM  node_ [' + i + '] TO node_ [' + j + '] : ' + results[j][distanceType].value + '\n';
             }
         }
     }
@@ -214,10 +218,10 @@ function writeResultsGML(response){
 
 function getJSONNodes() {
     var jsonArr = [];
-
+    // + 1 because consider also origin marker (green) 
     for (var i = 0; i < markers.length + 1; i++) {
         jsonArr.push({
-            id: (i + 1),
+            id: i,
             x: (i == 0) ? 43 : (Math.floor(Math.random() * 100) + 1),
             y: (i == 0) ? 50 : (Math.floor(Math.random() * 100) + 1)
         });
@@ -226,19 +230,22 @@ function getJSONNodes() {
 }
 
 function getJSONEdge(data) {
+    var symmetric = ($('input[name=generateGraph]:checked').val()=="symmetric") ? true : false;
+    var distanceType = $('input[name=distanceType]:checked').val();
     var origins = data.originAddresses;
     var jsonArr = [];
     for (var i = 0; i < origins.length; i++) {
         var results = data.rows[i].elements;
         for (var j = 0; j < results.length; j++) {
-            if (results[j].status == google.maps.GeocoderStatus.OK){
-                if (results[j].distance.value != 0) {
+            if (symmetric && i > j ){
+                continue;
+            }
+            if (results[j].status == google.maps.GeocoderStatus.OK && i!=j){
                     jsonArr.push({
-                        source: i + 1,
-                        target: j + 1,
-                        distance: results[j].distance.value
+                        source: i,
+                        target: j,
+                        distance: results[j][distanceType].value
                     });
-                }
             }
         }
     }
@@ -327,6 +334,12 @@ function handleSolutionUpload(event) {
     Note: solution is a json string.
 */
 function setSolutionInMap(solution){
+    //error if map not have markers
+    if (markers.length==0){
+        $("#alert-danger").show();
+        return;
+    }
+
     removeArcsRoutes();
     var jsonSolution = jQuery.parseJSON(solution);
     var allMarkers=get_origin();
@@ -341,8 +354,8 @@ function setSolutionInMap(solution){
             };
         var directionsService = new google.maps.DirectionsService();
             var request = {
-                origin: allMarkers[jsonSolution.arcs[key].source-1], 
-                destination: allMarkers[jsonSolution.arcs[key].target-1],
+                origin: allMarkers[jsonSolution.arcs[key].source], 
+                destination: allMarkers[jsonSolution.arcs[key].target],
                 travelMode: google.maps.TravelMode.DRIVING
             };
 
@@ -356,8 +369,6 @@ function setSolutionInMap(solution){
                 }
             });
         }
-        
-
         $("#routes").show();
     }else{
         /*FALSE drawing arcs in maps*/
@@ -365,8 +376,8 @@ function setSolutionInMap(solution){
              //var lineSymbol = { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW };
              var lineSymbol = { path: google.maps.SymbolPath.FORWARD };
              var lineCoordinates = [
-                    allMarkers[jsonSolution.arcs[key].source-1],
-                    allMarkers[jsonSolution.arcs[key].target-1]
+                    allMarkers[jsonSolution.arcs[key].source],
+                    allMarkers[jsonSolution.arcs[key].target]
              ];
               arc = new google.maps.Polyline({
                      path: lineCoordinates,
@@ -406,6 +417,11 @@ $(document).ready(function() {
         // user reselects the same file
         event.target.value = null;
     });
+
+    $("#close-alert-danger").click(function(){$("#alert-danger").hide();});
+    
+
+
 });
 
 
