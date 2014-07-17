@@ -354,7 +354,7 @@ function setSolutionInMap(solution) {
     var jsonSolution = jQuery.parseJSON(solution);
     var allMarkers = get_origin();
 
-    if (jsonSolution.path) {
+    if (jsonSolution.routes) {
         /*TRUE drawing routes in maps*/
 
         for (var key in jsonSolution.arcs) {
