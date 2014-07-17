@@ -7,8 +7,10 @@
 var map;
 var geocoder;
 var xml_gml;
-var originMarker;
-var markers = [];
+var originMarker;   // start marker 
+var markers = [];   // store all markers 
+var arcs = [];      // store all arcs
+var routes = [];    // store all route
 
 google.maps.event.addDomListener(window, 'load', initialize);
 function initialize() {
@@ -325,36 +327,40 @@ function handleSolutionUpload(event) {
     Note: solution is a json string.
 */
 function setSolutionInMap(solution){
+    removeArcsRoutes();
     var jsonSolution = jQuery.parseJSON(solution);
     var allMarkers=get_origin();
-   
-    if (jsonSolution.path){
-        /* se e' TRUE viene messo nella mappa il percorso stradale */
+
+    if(jsonSolution.path){
+        /*TRUE drawing routes in maps*/
         
         for (var key in jsonSolution.arcs) {
             var rendererOptions = {
                 preserveViewport: true,         
-                suppressMarkers:false
+                suppressMarkers:true
             };
-            var directionsService = new google.maps.DirectionsService();
+        var directionsService = new google.maps.DirectionsService();
             var request = {
                 origin: allMarkers[jsonSolution.arcs[key].source-1], 
                 destination: allMarkers[jsonSolution.arcs[key].target-1],
                 travelMode: google.maps.TravelMode.DRIVING
             };
 
-            var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-            directionsDisplay.setMap(map);
-
             directionsService.route(request, function(result, status) {
                 if (status == google.maps.DirectionsStatus.OK) {
+                    directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+                    directionsDisplay.setMap(map);
+                    directionsDisplay.setPanel(document.getElementById('directions-panel'));
                     directionsDisplay.setDirections(result);
+                    routes.push(directionsDisplay);
                 }
             });
         }
+        
 
-    } else {
-        /* se e' FALSE viene disegnato nella mappa un arco */
+        $("#routes").show();
+    }else{
+        /*FALSE drawing arcs in maps*/
         for (var key in jsonSolution.arcs) {
              //var lineSymbol = { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW };
              var lineSymbol = { path: google.maps.SymbolPath.FORWARD };
@@ -362,19 +368,33 @@ function setSolutionInMap(solution){
                     allMarkers[jsonSolution.arcs[key].source-1],
                     allMarkers[jsonSolution.arcs[key].target-1]
              ];
-             var line = new google.maps.Polyline({
-                path: lineCoordinates,
-                icons: [{
-                    icon: lineSymbol,
-                    offset: '100%'
-                }],
-                map: map
-             });
+              arc = new google.maps.Polyline({
+                     path: lineCoordinates,
+                     icons: [{
+                                icon: lineSymbol,
+                                offset: '100%'
+                            }],
+                    map: map
+                 });
+              arcs.push(arc);
         }
     }
 }
 
-$( document ).ready(function() {
+function removeArcsRoutes(){
+    for (var key in arcs) {
+        arcs[key].setMap(null);
+    }
+    arcs = [];
+    for (var key in routes) {
+        routes[key].setMap(null);
+    }
+    routes = [];
+    $("#routes").hide();
+    $("#directions-panel").empty();
+}
+
+$(document).ready(function() {
     $("#btnHideMarkers").click(hideMarkers);
     $("#btnShowMarkers").click(showMarkers);
     $("#btnDeleteMarkers").click(deleteMarkers);
@@ -386,6 +406,7 @@ $( document ).ready(function() {
         // user reselects the same file
         event.target.value = null;
     });
+    $("#btnSolution").click(function(){setSolutionInMap("")});
 });
 
 
