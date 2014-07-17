@@ -195,15 +195,16 @@ function writeResultsNodes(response){
 function writeResultsDistances(response){
     var origins = response.originAddresses;
     var resultsDistance = '';
-        for (var i = 0; i < origins.length; i++) {
-            var results = response.rows[i].elements;
-            for (var j = 0; j < results.length; j++) {
-                if (results[j].status == google.maps.GeocoderStatus.OK){
-                    resultsDistance += '--- FROM  node_ [' + (i + 1) + '] TO node_ [' + (j + 1) + '] : ' + results[j].distance.value + '\n';
-                }
+    var distanceType = $('.distanceType input:checked').val();
+    for (var i = 0; i < origins.length; i++) {
+        var results = response.rows[i].elements;
+        for (var j = 0; j < results.length; j++) {
+            if (results[j].status == google.maps.GeocoderStatus.OK){
+                resultsDistance += '--- FROM  node_ [' + (i + 1) + '] TO node_ [' + (j + 1) + '] : ' + results[j][distanceType].value + '\n';
             }
         }
-        $('#resultsDistances').val(resultsDistance);
+    }
+    $('#resultsDistances').val(resultsDistance);
 }
 
 function writeResultsGML(response){
@@ -309,21 +310,27 @@ function downloadGML(strData, strFileName, strMimeType) {
     return true;
 } /* end download() */
 
+function handleSolutionUpload(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+
+    var reader = new FileReader();
+    reader.onload = function(loadedFileEvent) {
+        var solutionContent = loadedFileEvent.target.result;
+        setSolutionInMap(solutionContent);
+    }
+    reader.readAsBinaryString(file);
+}
 
 /*
     WRITE SOLUTION IN MAP
+    Note: solution is a json string.
 */
-
-
-
-
-
 function setSolutionInMap(solution){
     removeArcsRoutes();
-    var solution="{\"path\":false,\"arcs\":[{\"source\":1,\"target\":2},{\"source\":1,\"target\":3},{\"source\":1,\"target\":4}]}";
     var jsonSolution = jQuery.parseJSON(solution);
     var allMarkers=get_origin();
-   
+
     if(jsonSolution.path){
         /*TRUE drawing routes in maps*/
         
@@ -373,6 +380,7 @@ function setSolutionInMap(solution){
         }
     }
 }
+
 function removeArcsRoutes(){
     for (var key in arcs) {
         arcs[key].setMap(null);
@@ -386,13 +394,19 @@ function removeArcsRoutes(){
     $("#directions-panel").empty();
 }
 
-$( document ).ready(function() {
-   $("#btnHideMarkers").click(function(){ hideMarkers() });
-   $("#btnShowMarkers").click(function(){showMarkers()});
-   $("#btnDeleteMarkers").click(function(){deleteMarkers()});
-   $("#btnCalculateDistances").click(function(){calculateDistances()});
-   $("#btnDownloadGML").click(function(){downloadGML($("#resultsGML").val(),'graph.gml','text/xml')});
-   $("#btnSolution").click(function(){setSolutionInMap("")});
+$(document).ready(function() {
+    $("#btnHideMarkers").click(hideMarkers);
+    $("#btnShowMarkers").click(showMarkers);
+    $("#btnDeleteMarkers").click(deleteMarkers);
+    $("#btnCalculateDistances").click(calculateDistances);
+    $("#btnDownloadGML").click(function(){downloadGML($("#resultsGML").val(),'graph.gml','text/xml')});
+    $("#btnUploadSolution").change(function(event) {
+        handleSolutionUpload(event);
+        // reset the input value so to enable the retriggering of the change event if the
+        // user reselects the same file
+        event.target.value = null;
+    });
+    $("#btnSolution").click(function(){setSolutionInMap("")});
 });
 
 
