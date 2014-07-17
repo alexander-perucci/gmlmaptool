@@ -7,8 +7,10 @@
 var map;
 var geocoder;
 var xml_gml;
-var originMarker;
-var markers = [];
+var originMarker;   // start marker 
+var markers = [];   // store all markers 
+var arcs = [];      // store all arcs
+var routes = [];    // store all route
 
 google.maps.event.addDomListener(window, 'load', initialize);
 function initialize() {
@@ -72,6 +74,17 @@ function initialize() {
         geocoder = new google.maps.Geocoder();
 
     });
+
+
+
+    /*per generare la linea nella mappa*/
+    var polyOptions = {
+    strokeColor: '#000000',
+    strokeOpacity: 1.0,
+    strokeWeight: 3
+  };
+  poly = new google.maps.Polyline(polyOptions);
+  poly.setMap(map);
 
 }
 
@@ -296,12 +309,90 @@ function downloadGML(strData, strFileName, strMimeType) {
     return true;
 } /* end download() */
 
+
+/*
+    WRITE SOLUTION IN MAP
+*/
+
+
+
+
+
+function setSolutionInMap(solution){
+    removeArcsRoutes();
+    var solution="{\"path\":false,\"arcs\":[{\"source\":1,\"target\":2},{\"source\":1,\"target\":3},{\"source\":1,\"target\":4}]}";
+    var jsonSolution = jQuery.parseJSON(solution);
+    var allMarkers=get_origin();
+   
+    if(jsonSolution.path){
+        /*TRUE drawing routes in maps*/
+        
+        for (var key in jsonSolution.arcs) {
+            var rendererOptions = {
+                preserveViewport: true,         
+                suppressMarkers:true
+            };
+        var directionsService = new google.maps.DirectionsService();
+            var request = {
+                origin: allMarkers[jsonSolution.arcs[key].source-1], 
+                destination: allMarkers[jsonSolution.arcs[key].target-1],
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+
+            directionsService.route(request, function(result, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+                    directionsDisplay.setMap(map);
+                    directionsDisplay.setPanel(document.getElementById('directions-panel'));
+                    directionsDisplay.setDirections(result);
+                    routes.push(directionsDisplay);
+                }
+            });
+        }
+        
+
+        $("#routes").show();
+    }else{
+        /*FALSE drawing arcs in maps*/
+        for (var key in jsonSolution.arcs) {
+             //var lineSymbol = { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW };
+             var lineSymbol = { path: google.maps.SymbolPath.FORWARD };
+             var lineCoordinates = [
+                    allMarkers[jsonSolution.arcs[key].source-1],
+                    allMarkers[jsonSolution.arcs[key].target-1]
+             ];
+              arc = new google.maps.Polyline({
+                     path: lineCoordinates,
+                     icons: [{
+                                icon: lineSymbol,
+                                offset: '100%'
+                            }],
+                    map: map
+                 });
+              arcs.push(arc);
+        }
+    }
+}
+function removeArcsRoutes(){
+    for (var key in arcs) {
+        arcs[key].setMap(null);
+    }
+    arcs = [];
+    for (var key in routes) {
+        routes[key].setMap(null);
+    }
+    routes = [];
+    $("#routes").hide();
+    $("#directions-panel").empty();
+}
+
 $( document ).ready(function() {
    $("#btnHideMarkers").click(function(){ hideMarkers() });
    $("#btnShowMarkers").click(function(){showMarkers()});
    $("#btnDeleteMarkers").click(function(){deleteMarkers()});
    $("#btnCalculateDistances").click(function(){calculateDistances()});
    $("#btnDownloadGML").click(function(){downloadGML($("#resultsGML").val(),'graph.gml','text/xml')});
+   $("#btnSolution").click(function(){setSolutionInMap("")});
 });
 
 
