@@ -23,10 +23,6 @@ GML Map Tool use:
 
  https://developers.google.com/maps/licensing
  
-### Future Works
-
- 1. Integrate [Data-Driven Documents](http://d3js.org/) to show a directed graph.
-
 
 ## Reporting an Issue
 
