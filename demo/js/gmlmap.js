@@ -257,11 +257,13 @@ function getJSONEdge(data) {
 }
 
 function createGML(data) {
+    var edgedefault = ($('input[name=generateGraph]:checked').val() == "symmetric") ? "undirected" : "directed";
+
     var source = "<?xml version=\"1.0\" encoding=\"utf-8\"?><graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">" +
         "<key attr.name= \"dist\" attr.type=\"int\" for=\"edge\" id=\"d2\" />" +
         "<key attr.name=\"x\" attr.type=\"int\" for=\"node\" id=\"d1\" />" +
         "<key attr.name=\"y\" attr.type=\"int\" for=\"node\" id=\"d0\" />" +
-        "<graph edgedefault=\"directed\">" +
+        "<graph edgedefault=\""+edgedefault+"\">" +
         "{{#each nodes}}<node id=\"{{id}}\"><data key=\"d0\">{{y}}</data><data key=\"d1\">{{x}}</data></node>{{/each}}" +
         "{{#each edges}}<edge source=\"{{source}}\" target=\"{{target}}\"><data key=\"d2\">{{distance}}</data></edge>{{/each}}" +
         "</graph>" +
