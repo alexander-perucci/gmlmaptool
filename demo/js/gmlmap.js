@@ -3,16 +3,16 @@
     copyright: Alexander Perucci
     license: Mozilla Public License Version 2.0
 */
-
 var map;
 var geocoder;
 var xml_gml;
-var originMarker;   // start marker 
-var markers = [];   // store all markers 
-var arcs = [];      // store all arcs
-var routes = [];    // store all route
+var originMarker; // start marker 
+var markers = []; // store all markers 
+var arcs = []; // store all arcs
+var routes = []; // store all route
 
 google.maps.event.addDomListener(window, 'load', initialize);
+
 function initialize() {
     var oirigin_marker_position = new google.maps.LatLng(42.35001701860846, 13.401266455078144);
 
@@ -43,7 +43,7 @@ function initialize() {
     google.maps.event.addListener(map, 'click', function (event) {
         addMarker(event.latLng);
     });
-    
+
     // add control menu
     var menu = /** @type {HTMLInputElement} */ (document.getElementById('custom_menu'));
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(menu);
@@ -79,12 +79,12 @@ function initialize() {
 
     /*per generare la linea nella mappa*/
     var polyOptions = {
-    strokeColor: '#000000',
-    strokeOpacity: 1.0,
-    strokeWeight: 3
-  };
-  poly = new google.maps.Polyline(polyOptions);
-  poly.setMap(map);
+        strokeColor: '#000000',
+        strokeOpacity: 1.0,
+        strokeWeight: 3
+    };
+    poly = new google.maps.Polyline(polyOptions);
+    poly.setMap(map);
 
 }
 
@@ -148,9 +148,8 @@ function deleteMarkers() {
 
 // calcolate distanze marker
 function get_origin() {
-    origin = [new google.maps.LatLng(originMarker.position.lat(), originMarker.position.lng())];
+    var origin = [new google.maps.LatLng(originMarker.position.lat(), originMarker.position.lng())];
     for (var key in markers) {
-
         var mark = new google.maps.LatLng(markers[key].position.lat(), markers[key].position.lng());
         origin.push(mark);
     }
@@ -160,7 +159,6 @@ function get_origin() {
 function calculateDistances() {
     var service = new google.maps.DistanceMatrixService();
     service.getDistanceMatrix({
-
         origins: get_origin(),
         destinations: get_origin(),
         travelMode: google.maps.TravelMode.DRIVING,
@@ -172,38 +170,41 @@ function calculateDistances() {
 
 function callbackCalculateDistances(response, status) {
     if (status != google.maps.DistanceMatrixStatus.OK) {
-        alert('Error was: ' + status);
+        setContentMessages(status);
+        $("#alert-danger").show();
     } else {
-       writeResultsNodes(response);
-       writeResultsDistances(response);
-       writeResultsGML(response);
+        writeResultsNodes(response);
+        writeResultsDistances(response);
+        writeResultsGML(response);
     }
 }
 
-function writeResultsNodes(response){
+function writeResultsNodes(response) {
     var origins = response.originAddresses;
-     var jsonArr = [];
-        for (var i = 0; i < origins.length; i++) {
-            jsonArr.push({
-                id: i,
-                name: origins[i]
-            });
-        }
-        $('#resultsNode').val(JSON.stringify(jsonArr)).format({method: 'json'}); 
+    var jsonArr = [];
+    for (var i = 0; i < origins.length; i++) {
+        jsonArr.push({
+            id: i,
+            name: origins[i]
+        });
+    }
+    $('#resultsNode').val(JSON.stringify(jsonArr)).format({
+        method: 'json'
+    });
 }
 
-function writeResultsDistances(response){
+function writeResultsDistances(response) {
     var origins = response.originAddresses;
     var resultsDistance = '';
     var distanceType = $('input[name=distanceType]:checked').val();
-    var symmetric = ($('input[name=generateGraph]:checked').val()=="symmetric") ? true : false;
+    var symmetric = ($('input[name=generateGraph]:checked').val() == "symmetric") ? true : false;
     for (var i = 0; i < origins.length; i++) {
         var results = response.rows[i].elements;
         for (var j = 0; j < results.length; j++) {
-            if (symmetric && i > j ){
+            if (symmetric && i > j) {
                 continue;
             }
-            if (results[j].status == google.maps.GeocoderStatus.OK && i!=j){
+            if (results[j].status == google.maps.GeocoderStatus.OK && i != j) {
                 resultsDistance += '--- FROM  node_ [' + i + '] TO node_ [' + j + '] : ' + results[j][distanceType].value + '\n';
             }
         }
@@ -211,8 +212,10 @@ function writeResultsDistances(response){
     $('#resultsDistances').val(resultsDistance);
 }
 
-function writeResultsGML(response){
-    $('#resultsGML').val(createGML(response)).format({method: 'xml'});
+function writeResultsGML(response) {
+    $('#resultsGML').val(createGML(response)).format({
+        method: 'xml'
+    });
 }
 
 
@@ -230,22 +233,22 @@ function getJSONNodes() {
 }
 
 function getJSONEdge(data) {
-    var symmetric = ($('input[name=generateGraph]:checked').val()=="symmetric") ? true : false;
+    var symmetric = ($('input[name=generateGraph]:checked').val() == "symmetric") ? true : false;
     var distanceType = $('input[name=distanceType]:checked').val();
     var origins = data.originAddresses;
     var jsonArr = [];
     for (var i = 0; i < origins.length; i++) {
         var results = data.rows[i].elements;
         for (var j = 0; j < results.length; j++) {
-            if (symmetric && i > j ){
+            if (symmetric && i > j) {
                 continue;
             }
-            if (results[j].status == google.maps.GeocoderStatus.OK && i!=j){
-                    jsonArr.push({
-                        source: i,
-                        target: j,
-                        distance: results[j][distanceType].value
-                    });
+            if (results[j].status == google.maps.GeocoderStatus.OK && i != j) {
+                jsonArr.push({
+                    source: i,
+                    target: j,
+                    distance: results[j][distanceType].value
+                });
             }
         }
     }
@@ -278,40 +281,46 @@ function createGML(data) {
 
 function downloadGML(strData, strFileName, strMimeType) {
     var D = document,
-        a = D.createElement("a");
-        strMimeType= strMimeType || "application/octet-stream";
+    a = D.createElement("a");
+    strMimeType = strMimeType || "application/octet-stream";
 
     if (navigator.msSaveBlob) { // IE10+
-        return navigator.msSaveBlob(new Blob([strData], {type: strMimeType}), strFileName);
+        return navigator.msSaveBlob(new Blob([strData], {
+            type: strMimeType
+        }), strFileName);
     } /* end if(navigator.msSaveBlob) */
 
 
 
     if ('download' in a) { //html5 A[download]
-        if(window.URL){
-            a.href= window.URL.createObjectURL(new Blob([strData]));
-            
-        }else{
+        if (window.URL) {
+            a.href = window.URL.createObjectURL(new Blob([strData]));
+
+        } else {
             a.href = "data:" + strMimeType + "," + encodeURIComponent(strData);
         }
         a.setAttribute("download", strFileName);
         a.innerHTML = "downloading...";
         D.body.appendChild(a);
-        setTimeout(function() {
+        setTimeout(function () {
             a.click();
             D.body.removeChild(a);
-            if(window.URL){setTimeout(function(){ window.URL.revokeObjectURL(a.href);}, 250 );}
+            if (window.URL) {
+                setTimeout(function () {
+                    window.URL.revokeObjectURL(a.href);
+                }, 250);
+            }
         }, 66);
         return true;
     } /* end if('download' in a) */
 
-    
+
     //do iframe dataURL download (old ch+FF):
     var f = D.createElement("iframe");
     D.body.appendChild(f);
-    f.src = "data:" +  strMimeType   + "," + encodeURIComponent(strData);
+    f.src = "data:" + strMimeType + "," + encodeURIComponent(strData);
 
-    setTimeout(function() {
+    setTimeout(function () {
         D.body.removeChild(f);
     }, 333);
     return true;
@@ -322,7 +331,7 @@ function handleSolutionUpload(event) {
     if (!file) return;
 
     var reader = new FileReader();
-    reader.onload = function(loadedFileEvent) {
+    reader.onload = function (loadedFileEvent) {
         var solutionContent = loadedFileEvent.target.result;
         setSolutionInMap(solutionContent);
     }
@@ -333,35 +342,36 @@ function handleSolutionUpload(event) {
     WRITE SOLUTION IN MAP
     Note: solution is a json string.
 */
-function setSolutionInMap(solution){
+function setSolutionInMap(solution) {
     //error if map not have markers
-    if (markers.length==0){
+    if (markers.length == 0) {
+        setContentMessages("Cannot upload because the Graph in empty.");
         $("#alert-danger").show();
         return;
     }
 
     removeArcsRoutes();
     var jsonSolution = jQuery.parseJSON(solution);
-    var allMarkers=get_origin();
+    var allMarkers = get_origin();
 
-    if(jsonSolution.path){
+    if (jsonSolution.path) {
         /*TRUE drawing routes in maps*/
-        
+
         for (var key in jsonSolution.arcs) {
             var rendererOptions = {
-                preserveViewport: true,         
-                suppressMarkers:true
+                preserveViewport: true,
+                suppressMarkers: true
             };
-        var directionsService = new google.maps.DirectionsService();
+            var directionsService = new google.maps.DirectionsService();
             var request = {
-                origin: allMarkers[jsonSolution.arcs[key].source], 
+                origin: allMarkers[jsonSolution.arcs[key].source],
                 destination: allMarkers[jsonSolution.arcs[key].target],
                 travelMode: google.maps.TravelMode.DRIVING
             };
 
-            directionsService.route(request, function(result, status) {
+            directionsService.route(request, function (result, status) {
                 if (status == google.maps.DirectionsStatus.OK) {
-                    directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+                    var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
                     directionsDisplay.setMap(map);
                     directionsDisplay.setPanel(document.getElementById('directions-panel'));
                     directionsDisplay.setDirections(result);
@@ -370,29 +380,31 @@ function setSolutionInMap(solution){
             });
         }
         $("#routes").show();
-    }else{
+    } else {
         /*FALSE drawing arcs in maps*/
         for (var key in jsonSolution.arcs) {
-             //var lineSymbol = { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW };
-             var lineSymbol = { path: google.maps.SymbolPath.FORWARD };
-             var lineCoordinates = [
-                    allMarkers[jsonSolution.arcs[key].source],
-                    allMarkers[jsonSolution.arcs[key].target]
-             ];
-              arc = new google.maps.Polyline({
-                     path: lineCoordinates,
-                     icons: [{
-                                icon: lineSymbol,
-                                offset: '100%'
-                            }],
-                    map: map
-                 });
-              arcs.push(arc);
+            //var lineSymbol = { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW };
+            var lineSymbol = {
+                path: google.maps.SymbolPath.FORWARD
+            };
+            var lineCoordinates = [
+                allMarkers[jsonSolution.arcs[key].source],
+                allMarkers[jsonSolution.arcs[key].target]
+            ];
+            var arc = new google.maps.Polyline({
+                path: lineCoordinates,
+                icons: [{
+                    icon: lineSymbol,
+                    offset: '100%'
+                }],
+                map: map
+            });
+            arcs.push(arc);
         }
     }
 }
 
-function removeArcsRoutes(){
+function removeArcsRoutes() {
     for (var key in arcs) {
         arcs[key].setMap(null);
     }
@@ -405,23 +417,30 @@ function removeArcsRoutes(){
     $("#directions-panel").empty();
 }
 
-$(document).ready(function() {
+function setContentMessages(message){
+    $("#content-alert-danger").empty();
+    $("#content-alert-danger").append( "<strong>Oops!</strong> "+message);
+}
+
+
+
+$(document).ready(function () {
     $("#btnHideMarkers").click(hideMarkers);
     $("#btnShowMarkers").click(showMarkers);
     $("#btnDeleteMarkers").click(deleteMarkers);
     $("#btnCalculateDistances").click(calculateDistances);
-    $("#btnDownloadGML").click(function(){downloadGML($("#resultsGML").val(),'graph.gml','text/xml')});
-    $("#btnUploadSolution").change(function(event) {
+    $("#btnDownloadGML").click(function () {
+        downloadGML($("#resultsGML").val(), 'graph.gml', 'text/xml')
+    });
+    $("#btnUploadSolution").change(function (event) {
         handleSolutionUpload(event);
         // reset the input value so to enable the retriggering of the change event if the
         // user reselects the same file
         event.target.value = null;
     });
 
-    $("#close-alert-danger").click(function(){$("#alert-danger").hide();});
-    
-
+    $("#close-alert-danger").click(function () {
+        $("#alert-danger").hide();
+    });
 
 });
-
-
