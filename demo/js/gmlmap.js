@@ -406,7 +406,6 @@ $(document).ready(function() {
         // user reselects the same file
         event.target.value = null;
     });
-    $("#btnSolution").click(function(){setSolutionInMap("")});
 });
 
 

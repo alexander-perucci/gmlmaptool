@@ -69,9 +69,18 @@ border-color:#4d90fe;
 font-family:Roboto;
 }
 
+input#btnUploadSolution:hover {
+cursor: pointer;
+}
+
+
+background-color: #5bc0de;
+border-color: #46b8da;
+
 .uploader {
     position:relative;
     overflow:hidden;
+    
 }
 .uploader button {
     position: absolute;
