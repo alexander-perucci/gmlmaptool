@@ -1,5 +1,5 @@
 /*
-    GML Map Tool v1.0
+    GML Map Tool v2.0
     copyright: Alexander Perucci
     license: Mozilla Public License Version 2.0
 */
