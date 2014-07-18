@@ -9,6 +9,34 @@ GML Map Tool is a Web Tool that allows you to create a directed complete Graph i
 
 GML Map Tool can be downloaded [here](https://github.com/prednaxela/gmlmaptool/archive/master.zip)
 
+### Sample Json for Upload Solution
+
+pre condition: - Put three red nodes in maps.
+
+<pre>
+{
+   "routes":false,
+   "arcs":[
+      {
+         "source":0,
+         "target":1
+      },
+      {
+         "source":0,
+         "target":2
+      },
+      {
+         "source":1,
+         "target":3
+      },
+      {
+         "source":3,
+         "target":0
+      }
+   ]
+}
+</pre>
+
 ### Dependencies
 
 GML Map Tool use:
