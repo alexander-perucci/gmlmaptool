@@ -22,7 +22,7 @@ GML Map Tool use:
 ### Sample Json for Upload Solution
 
 #### pre-condition: 
- 1. Put three red nodes in maps.
+ - Put three red marker in maps.
 
 <pre>
 {
@@ -50,7 +50,7 @@ GML Map Tool use:
 
 | Attributes | Value             | Description  |
 | ---------- |:-----------------:|:------------|
-| routes     | `true` or `false` | If the property is set a `true`, the map displays the route between source and target nodes. Otherwise, the map displays an arc between source and target nodes. |
+| routes     | `true` or `false` | If the property is set a `true`, the map displays the route between source and target markers. Otherwise, the map displays an arc between source and target markers. |
 | arcs       | array of ojects   | identify the arcs between `source` and `target` nodes.|
 
 
