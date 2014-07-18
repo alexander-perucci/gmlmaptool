@@ -9,9 +9,20 @@ GML Map Tool is a Web Tool that allows you to create a directed complete Graph i
 
 GML Map Tool can be downloaded [here](https://github.com/prednaxela/gmlmaptool/archive/master.zip)
 
+### Dependencies
+
+GML Map Tool use:
+
+ 1. jQuery [download](http://jquery.com/) 
+ 2. jquery.format [download](https://github.com/zachofalltrades/jquery.format)
+ 3. handlebars [download](http://handlebarsjs.com/) 
+ 4. Google Maps API
+ 5. Google Distance Matrix API
+
 ### Sample Json for Upload Solution
 
-pre condition: - Put three red nodes in maps.
+#### pre-condition: 
+ 1. Put three red nodes in maps.
 
 <pre>
 {
@@ -37,15 +48,11 @@ pre condition: - Put three red nodes in maps.
 }
 </pre>
 
-### Dependencies
+| Attributes | Value             | Description  |
+| ---------- |:-----------------:|:------------|
+| routes     | `true` or `false` | If the property is set a `true`, the map displays the route between source and target nodes. Otherwise, the map displays an arc between source and target nodes. |
+| arcs       | array of ojects   | identify the arcs between `source` and `target` nodes.|
 
-GML Map Tool use:
-
- 1. jQuery [download](http://jquery.com/) 
- 2. jquery.format [download](https://github.com/zachofalltrades/jquery.format)
- 3. handlebars [download](http://handlebarsjs.com/) 
- 4. Google Maps API
- 5. Google Distance Matrix API
 
 ### Limits
 
