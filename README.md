@@ -1,7 +1,7 @@
 GML Map Tool
 =======================
 
-GML Map Tool is a Web Tool that allows you to create a directed complete Graph in GML format, using Google Maps as a data source, moreover allows you to draw an arc or route directly in the maps via JSON file. [Try It !](http://www.alexanderperucci.com/portfolio-demo/gmlmaptool/)
+GML Map Tool is a Web Tool that allows you to create a directed complete Graph in GML format, using Google Maps as a data source, moreover allows you to draw an arc or route directly in the maps via JSON file.
 
 ## Getting Started
 
